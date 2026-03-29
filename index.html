@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aussie Naturals | Premium Australian Foods</title>
+  <meta name="description" content="Discover premium, natural foods sourced from the pristine environments of Australia.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo">AussieNaturals.</a>
+    <nav class="nav-links">
+      <select id="langSwitcher" style="border:none; background:transparent; font-family:var(--font-family); font-weight:500; cursor:pointer;"><option value="zh">中文</option><option value="en">English</option></select>
+      <a href="index.html" data-i18n="nav_shop">Shop</a>
+      <a href="cart.html" class="cart-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+        <span class="cart-count">0</span>
+      </a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1 data-i18n="hero_title">Taste the <br>True Essence of <br><span style="color:var(--accent-color)">Australia</span>.</h1>
+      <p data-i18n="hero_subtitle">Premium natural foods sustainably sourced from the pristine landscapes down under.</p>
+      <a href="#shop" class="btn btn-accent" data-i18n="btn_explore">Explore Catalog</a>
+    </div>
+  </section>
+
+  <section id="shop" class="products-section">
+    <h2 class="section-title" data-i18n="title_bestsellers">Our Bestsellers</h2>
+    <div class="products-grid">
+      <!-- Filled via app.js -->
+    </div>
+  </section>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

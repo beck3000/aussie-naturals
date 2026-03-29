@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | Aussie Naturals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .success-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+    .modal-content {
+      background: var(--white);
+      padding: 3rem;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 400px;
+      animation: fadeIn 0.4s ease-out;
+      box-shadow: var(--shadow-hover);
+    }
+    .check-icon {
+      width: 80px; height: 80px;
+      background: #4ade80;
+      color: white;
+      border-radius: 50%;
+      display: flex; justify-content: center; align-items: center;
+      margin: 0 auto 1.5rem auto;
+      font-size: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="logo">AussieNaturals.</a>
+    <nav class="nav-links">
+      <select id="langSwitcher" style="border:none; background:transparent; font-family:var(--font-family); font-weight:500; cursor:pointer;"><option value="zh">中文</option><option value="en">English</option></select>
+      <a href="index.html" data-i18n="nav_cancel">Cancel / Return to Shop</a>
+    </nav>
+  </header>
+
+  <main class="page-container">
+    <div class="grid-layout">
+      <!-- Shipping and Payment Form -->
+      <div>
+        <h1 style="margin-bottom: 2rem; color: var(--primary-color);" data-i18n="checkout_title">Secure Checkout</h1>
+        <div class="card">
+          <h2 style="margin-bottom: 1.5rem; font-size: 1.3rem;" data-i18n="checkout_shipping">Shipping Details</h2>
+          <form id="checkout-form">
+            <div class="form-group">
+              <label for="name" data-i18n="label_name">Full Name</label>
+              <input type="text" id="name" class="form-control" required placeholder="John Doe">
+            </div>
+            <div class="form-group">
+              <label for="email" data-i18n="label_email">Email Address</label>
+              <input type="email" id="email" class="form-control" required placeholder="john@example.com">
+            </div>
+            <div class="form-group">
+              <label for="address" data-i18n="label_address">Shipping Address</label>
+              <input type="text" id="address" class="form-control" required placeholder="123 Natural Way, Sydney">
+            </div>
+            <div style="display: flex; gap: 1rem;">
+              <div class="form-group" style="flex: 1;">
+                <label for="city" data-i18n="label_city">City</label>
+                <input type="text" id="city" class="form-control" required>
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label for="zip" data-i18n="label_zip">Zip/Postal Code</label>
+                <input type="text" id="zip" class="form-control" required>
+              </div>
+            </div>
+
+            <h2 style="margin: 2rem 0 1.5rem; font-size: 1.3rem; padding-top:2rem; border-top:1px solid var(--border-color);" data-i18n="checkout_payment">Payment Details</h2>
+            <div class="form-group">
+              <label for="card" data-i18n="label_card">Card Number</label>
+              <input type="text" id="card" class="form-control" required placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
+            </div>
+            <div style="display: flex; gap: 1rem;">
+              <div class="form-group" style="flex: 1;">
+                <label for="exp" data-i18n="label_exp">Expiry (MM/YY)</label>
+                <input type="text" id="exp" class="form-control" required placeholder="MM/YY">
+              </div>
+              <div class="form-group" style="flex: 1;">
+                <label for="cvv" data-i18n="label_cvv">CVV</label>
+                <input type="text" id="cvv" class="form-control" required placeholder="123">
+              </div>
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%; margin-top:1rem;" data-i18n="btn_place_order">Place Order</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div>
+        <div class="card" style="position: sticky; top: 120px;">
+          <h2 style="margin-bottom: 1.5rem; font-size: 1.5rem;" data-i18n="checkout_summary">Your Order</h2>
+          <div id="checkout-items" style="margin-bottom: 2rem;">
+            <!-- Filled via JS -->
+          </div>
+          <div class="summary-row">
+            <span data-i18n="cart_subtotal">Subtotal</span>
+            <span id="checkout-subtotal">$0.00</span>
+          </div>
+          <div class="summary-row">
+            <span data-i18n="cart_shipping">Shipping</span>
+            <span>$5.00</span>
+          </div>
+          <div class="summary-row summary-total">
+            <span data-i18n="checkout_total_pay">Total to pay</span>
+            <span id="checkout-total">$0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="success-modal" id="success-modal">
+    <div class="modal-content">
+      <div class="check-icon">✓</div>
+      <h2 style="margin-bottom: 1rem; color: var(--primary-color);" data-i18n="modal_success_title">Order Confirmed!</h2>
+      <p style="color: var(--text-light); margin-bottom: 2rem;" data-i18n="modal_success_desc">Thank you for your purchase. We will send the pristine taste of Australia to you soon.</p>
+      <a href="index.html" class="btn btn-accent" id="return-btn" data-i18n="btn_return_home">Return Home</a>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Render checkout summary
+      const container = document.getElementById('checkout-items');
+      const subEl = document.getElementById('checkout-subtotal');
+      const totEl = document.getElementById('checkout-total');
+
+      if (!cart || cart.length === 0) {
+        window.location.href = 'cart.html';
+        return;
+      }
+
+      container.innerHTML = cart.map(item => `
+        <div style="display:flex; justify-content:space-between; margin-bottom:1rem; font-size:0.9rem; border-bottom:1px solid #eee; padding-bottom:0.8rem;">
+          <div style="display:flex; gap:1rem; align-items:center;">
+             <img src="${item.image}" style="width:50px; height:50px; border-radius:8px; object-fit:cover;">
+             <div>
+               <div style="font-weight:600;">${currentLang === 'zh' && item.name_zh ? item.name_zh : item.name}</div>
+               <div style="color:var(--text-light)"><span data-i18n="qty">${translations[currentLang].qty}</span> ${item.quantity}</div>
+             </div>
+          </div>
+          <div style="font-weight:600;">$${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+      `).join('');
+
+      const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+      subEl.textContent = `$${subtotal.toFixed(2)}`;
+      totEl.textContent = `$${(subtotal + 5).toFixed(2)}`;
+
+      // Handle form submit to backend
+      const form = document.getElementById('checkout-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const orderData = {
+          name: document.getElementById('name').value,
+          email: document.getElementById('email').value,
+          address: document.getElementById('address').value,
+          city: document.getElementById('city').value,
+          zip: document.getElementById('zip').value,
+          cart: cart,
+          total: subtotal + 5
+        };
+
+        try {
+          const res = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+          });
+          
+          if(res.ok) {
+            document.getElementById('success-modal').style.display = 'flex';
+            localStorage.removeItem('cart');
+          } else {
+            alert("Failed to submit order");
+          }
+        } catch(err) {
+          alert("Error connecting to the backend server. Is it running on port 3000?");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
