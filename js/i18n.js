@@ -31,9 +31,25 @@ const translations = {
     checkout_summary: '您的订单',
     checkout_total_pay: '应付金额',
     modal_success_title: '订单已确认！',
+    modal_success_title: '订单已确认！',
     modal_success_desc: '感谢您的购买，我们将很快把那纯洁的澳洲天然风味寄送到您身边。',
     btn_return_home: '返回首页',
-    qty: '数量:'
+    qty: '数量:',
+    nav_orders: '订单中心',
+    tab_all: '全部分类',
+    tab_native: '原生食材',
+    tab_mushroom: '珍稀菌类',
+    tab_seafood: '顶级海鲜',
+    tab_meat: '优质肉类',
+    tab_oil: '天然油脂',
+    modal_add_title: '选择购买数量',
+    btn_cancel: '取消',
+    btn_confirm: '确认添加',
+    orders_title: '我的订单历史',
+    orders_empty: '这里没有任何订单记录。赶紧去选购商品吧！',
+    order_id_prefix: '订单编号 #',
+    order_date_prefix: '下单时间:',
+    order_total: '结账总计:'
   },
   en: {
     nav_shop: 'Shop',
@@ -67,9 +83,25 @@ const translations = {
     checkout_summary: 'Your Order',
     checkout_total_pay: 'Total to pay',
     modal_success_title: 'Order Confirmed!',
+    modal_success_title: 'Order Confirmed!',
     modal_success_desc: 'Thank you for your purchase. We will send the pristine taste of Australia to you soon.',
     btn_return_home: 'Return Home',
-    qty: 'Qty:'
+    qty: 'Qty:',
+    nav_orders: 'Order Center',
+    tab_all: 'All Items',
+    tab_native: 'Native Ingredients',
+    tab_mushroom: 'Rare Mushrooms',
+    tab_seafood: 'Premium Seafood',
+    tab_meat: 'Quality Meats',
+    tab_oil: 'Natural Oils',
+    modal_add_title: 'Select Quantity',
+    btn_cancel: 'Cancel',
+    btn_confirm: 'Add to Cart',
+    orders_title: 'My Order History',
+    orders_empty: 'No order records found. Start shopping now!',
+    order_id_prefix: 'Order ID #',
+    order_date_prefix: 'Placed on:',
+    order_total: 'Order Total:'
   }
 };
 

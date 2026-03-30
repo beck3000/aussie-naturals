@@ -38,9 +38,45 @@ const db = new sqlite3.Database('./database.sqlite', (err) => {
           console.log('Seeding initial bilingual products...');
           const stmt = db.prepare("INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
           const products = [
-            { id: 'p1', name: 'Premium Australian Manuka Honey (MGO 830+)', name_zh: '特级澳洲纯净麦卢卡蜂蜜 (MGO 830+)', price: 89.99, image: 'assets/manuka_honey.png', description: 'Sourced from the pristine forests of Australia, this Manuka honey is famous for its rich flavor and natural health benefits.', description_zh: '严选自澳洲原始森林，这款麦卢卡蜂蜜以其醇厚的口感和天然的健康功效而闻名。', category: 'honey', category_zh: '纯正蜂蜜' },
-            { id: 'p2', name: 'Roasted Australian Macadamia Nuts', name_zh: '原味烘焙澳洲夏威夷果', price: 24.50, image: 'assets/macadamia_nuts.png', description: 'Golden roasted premium macadamias. Creamy, crunchy and perfectly salted for a luxurious snack.', description_zh: '金黄烘焙的高端夏威夷果，口感奶油般细腻酥脆，辅以恰到好处的海盐，尽享奢华零食体验。', category: 'nuts', category_zh: '优选坚果' },
-            { id: 'p3', name: 'Organic Australian Rolled Oats', name_zh: '澳洲有机燕麦片', price: 12.99, image: 'assets/organic_oats.png', description: '100% organic, whole grain rolled oats grown in the rich soils of Southern Australia. Perfect for a healthy breakfast.', description_zh: '100%有机全谷物燕麦片，产自南澳丰饶的土壤。带来完美健康的早餐选择。', category: 'pantry', category_zh: '健康粗粮' }
+            // native
+            { id: 'n1', name: 'Premium Australian Macadamia Nuts', name_zh: '澳洲特级夏威夷果', price: 24.50, image: 'https://images.unsplash.com/photo-1590412200988-a436970781fa?auto=format&fit=crop&q=80&w=800', description: 'Golden roasted premium macadamias. Creamy, crunchy and perfectly salted for a luxurious snack.', description_zh: '金黄烘焙的高端夏威夷果，口感奶油般细腻酥脆，辅以恰到好处的海盐。', category: 'native', category_zh: '原生食材' },
+            { id: 'n2', name: 'Raw Manuka Honey (MGO 830+)', name_zh: '未过滤生麦卢卡蜂蜜', price: 89.99, image: 'https://images.unsplash.com/photo-1587049352847-4d4b126a51ce?auto=format&fit=crop&q=80&w=800', description: 'Sourced from the pristine forests of Australia, rich flavor and natural health benefits.', description_zh: '严选自澳洲原始森林，这款麦卢卡蜂蜜以其醇厚的口感和天然的健康功效而闻名。', category: 'native', category_zh: '原生食材' },
+            { id: 'n3', name: 'Organic Bush Tomato', name_zh: '纯野生丛林番茄', price: 18.20, image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=800', description: 'Sun-dried native bush tomatoes with a rich, caramel-like flavor.', description_zh: '日晒原生丛林小番茄，带有一丝醇厚的焦糖风味，极其适合作为香料点缀。', category: 'native', category_zh: '原生食材' },
+            { id: 'n4', name: 'Wattleseed Roast', name_zh: '金合欢籽烘焙原粒', price: 22.00, image: 'https://images.unsplash.com/photo-1510443912642-1e9a4f4efad8?auto=format&fit=crop&q=80&w=800', description: 'A coffee-like aromatic seed with hints of chocolate and hazelnut.', description_zh: '拥有类似咖啡的浓郁香气，并隐约带出巧克力与榛子的醇厚。', category: 'native', category_zh: '原生食材' },
+            { id: 'n5', name: 'Finger Lime Pearls', name_zh: '野生手指指橙鱼子酱', price: 35.50, image: 'https://images.unsplash.com/photo-1628189689408-011400e26b1d?auto=format&fit=crop&q=80&w=800', description: 'Citrus caviar native to the rainforest, offering a burst of zesty flavor.', description_zh: '被誉为“雨林柑橘鱼子酱”，能在口腔中瞬间爆发出酸爽诱人的天然果香。', category: 'native', category_zh: '原生食材' },
+            { id: 'n6', name: 'Lemon Myrtle Leaves', name_zh: '原生柠檬香桃木叶', price: 15.99, image: 'https://images.unsplash.com/photo-1597816049280-977465f0fc97?auto=format&fit=crop&q=80&w=800', description: 'The purest, most concentrated lemon flavor produced by any plant.', description_zh: '这是所有已知植物中纯度最高、最浓缩的天然柠檬清香，可用于泡茶及烹饪。', category: 'native', category_zh: '原生食材' },
+            
+            // mushroom
+            { id: 'm1', name: 'Tasmanian Black Truffle', name_zh: '塔斯马尼亚黑松露', price: 120.00, image: 'https://images.unsplash.com/photo-1616010065094-1a221f0fd6bb?auto=format&fit=crop&q=80&w=800', description: 'Earthy, aromatic truffles grown in the cool climate of Tasmania.', description_zh: '在塔斯马尼亚极寒气候中孕育的顶级黑松露，泥土气息与菌菇芳香浓郁醇厚。', category: 'mushroom', category_zh: '珍稀菌类' },
+            { id: 'm2', name: 'Wild Pine Mushrooms', name_zh: '野生高山松茸', price: 45.00, image: 'https://images.unsplash.com/photo-1505368361719-79f90f6e522f?auto=format&fit=crop&q=80&w=800', description: 'Foraged from pristine pine forests, perfect for rich, savory dishes.', description_zh: '采摘自原封未动的松林深处，最适合用于炖煮需要浓郁鲜香的高级菜肴。', category: 'mushroom', category_zh: '珍稀菌类' },
+            { id: 'm3', name: 'Native Lion’s Mane', name_zh: '原生猴头菇提取精华', price: 55.00, image: 'https://images.unsplash.com/photo-1613588718956-c2e803099908?auto=format&fit=crop&q=80&w=800', description: 'Cognition-enhancing mushroom powder sourced locally.', description_zh: '由极其罕见的纯天然野生猴头菇制成的高浓度提取粉末，对神经有极佳益处。', category: 'mushroom', category_zh: '珍稀菌类' },
+            { id: 'm4', name: 'Golden Enoki Cluster', name_zh: '金针菇皇束', price: 12.50, image: 'https://images.unsplash.com/photo-1604085429184-e9ed11eb69b8?auto=format&fit=crop&q=80&w=800', description: 'Crunchy and sweet, organically grown in controlled environments.', description_zh: '在严密温度控制下养育的金色菌束，带着甜脆的高级口感。', category: 'mushroom', category_zh: '珍稀菌类' },
+            { id: 'm5', name: 'Earthy Shiitake Log', name_zh: '段木香菇 (带木盒)', price: 38.00, image: 'https://images.unsplash.com/photo-1596489392231-f51c045b4c10?auto=format&fit=crop&q=80&w=800', description: 'Grow your own thick, meaty shiitake mushrooms at home.', description_zh: '完整的自培木段，让您在厨房里亲手摘下散发着浓烈原木鲜香的肥厚香菇。', category: 'mushroom', category_zh: '珍稀菌类' },
+            { id: 'm6', name: 'Ghost Fungi Powder', name_zh: '极光幽灵菇鲜味粉', price: 28.99, image: 'https://images.unsplash.com/photo-1594894611593-9c9aeecfa562?auto=format&fit=crop&q=80&w=800', description: 'A secret chef ingredient that brings unparalleled umami depth.', description_zh: '名厨们压箱底的秘密调料，为任何高汤瞬间注入无与伦比的深邃鲜味。', category: 'mushroom', category_zh: '珍稀菌类' },
+            
+            // seafood
+            { id: 's1', name: 'Wild Caught Barramundi', name_zh: '野生捕捞澳洲盲槽鱼', price: 34.00, image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&q=80&w=800', description: 'Sustainably caught in northern waters, prized for its buttery texture.', description_zh: '在北部海域可持续捕捞的顶级盲槽，以其奶油般的丝滑鱼肉而备受推崇。', category: 'seafood', category_zh: '顶级海鲜' },
+            { id: 's2', name: 'Southern Rock Lobster', name_zh: '南澳岩龙虾', price: 150.00, image: 'https://images.unsplash.com/photo-1559742811-6b2de6cc0375?auto=format&fit=crop&q=80&w=800', description: 'Premium red lobster known for sweet, firm, and succulent meat.', description_zh: '著名的红色高级龙虾，肉质紧实多汁且带着天然的深海甜味。', category: 'seafood', category_zh: '顶级海鲜' },
+            { id: 's3', name: 'Coffin Bay Oysters', name_zh: '柯芬湾鲜活生蚝 (一打)', price: 25.00, image: 'https://images.unsplash.com/photo-1594824813351-e37a2f58ecfa?auto=format&fit=crop&q=80&w=800', description: 'Freshly shucked, plump oysters with a clean, briny finish.', description_zh: '刚刚从纯净水域打捞开壳的丰满生蚝，带着干净凛冽的海洋咸鲜。', category: 'seafood', category_zh: '顶级海鲜' },
+            { id: 's4', name: 'Spencer Gulf King Prawns', name_zh: '斯宾塞湾国王明虾', price: 42.00, image: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?auto=format&fit=crop&q=80&w=800', description: 'Wild caught prawns with an incredibly sweet profile.', description_zh: '完全野生的国王明虾，个头硕大，令人惊艳的清甜口感是它的标志。', category: 'seafood', category_zh: '顶级海鲜' },
+            { id: 's5', name: 'Blue Swimmer Crab Meat', name_zh: '纯蓝花蟹肉罐', price: 65.00, image: 'https://images.unsplash.com/photo-1599084993091-1cb880721f44?auto=format&fit=crop&q=80&w=800', description: 'Hand-picked, pasteurized sweet crab meat.', description_zh: '经过繁琐手工拆解并巴氏杀菌密封的纯甘蓝花蟹肉，一丝不苟的高端海味。', category: 'seafood', category_zh: '顶级海鲜' },
+            { id: 's6', name: 'Balaric Sea Urchin Roe', name_zh: '顶级海胆黄 (Uni)', price: 110.00, image: 'https://images.unsplash.com/photo-1626244799059-e93cf8a4ca99?auto=format&fit=crop&q=80&w=800', description: 'Creamy, rich sea urchin roe that melts instantly in your mouth.', description_zh: '入口即化的奶油质地，带着深海的丰沛层次，是刺身界的黄金。', category: 'seafood', category_zh: '顶级海鲜' },
+            
+            // meat
+            { id: 'mt1', name: 'Wagyu Ribeye (MBS 9+)', name_zh: 'M9+ 和牛肋眼牛排', price: 180.00, image: 'https://images.unsplash.com/photo-1625937759403-17688ad2de20?auto=format&fit=crop&q=80&w=800', description: 'Incredibly marbled beef that promises a melt-in-your-mouth experience.', description_zh: '拥有完美大理石纹理的顶级和牛，为您带来无可阻挡的脂肪融化体验。', category: 'meat', category_zh: '优质肉类' },
+            { id: 'mt2', name: 'Free Range Kangaroo Loin', name_zh: '野生散养袋鼠里脊', price: 26.50, image: 'https://images.unsplash.com/photo-1603048297172-c92544798d5e?auto=format&fit=crop&q=80&w=800', description: 'Lean, healthy, and highly sustainable premium game meat.', description_zh: '极低脂、高蛋白且绝对绿色的高级野味，肉质紧实却不失细腻。', category: 'meat', category_zh: '优质肉类' },
+            { id: 'mt3', name: 'Organic Grass-Fed Lamb Rack', name_zh: '有机草饲羊排', price: 48.00, image: 'https://images.unsplash.com/photo-1602491453631-e2a5ad90a131?auto=format&fit=crop&q=80&w=800', description: 'Tender and juicy lamb rack raised on natural Australian pastures.', description_zh: '在天然牧场自由散养的草饲小羊羔，烤制后外焦里嫩，汁水四溢。', category: 'meat', category_zh: '优质肉类' },
+            { id: 'mt4', name: 'Slow-Smoked Brisket', name_zh: '烟熏慢烤牛腩肉', price: 35.00, image: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=80&w=800', description: 'Smoked for 14 hours over ironbark wood for maximum flavor.', description_zh: '在铁皮树木柴上缓慢熏制 14 个小时，每一簇肌肉纤维都浸透了浓郁风味。', category: 'meat', category_zh: '优质肉类' },
+            { id: 'mt5', name: 'Heritage Berkshire Pork Cutlet', name_zh: '巴克夏黑猪排', price: 29.00, image: 'https://images.unsplash.com/photo-1602500055255-a0bc851680d2?auto=format&fit=crop&q=80&w=800', description: 'Succulent pork with excellent fat distribution and a clean finish.', description_zh: '传承纯血脉的巴克夏黑猪，脂肪雪花分布极佳，油脂清亮而不腻。', category: 'meat', category_zh: '优质肉类' },
+            { id: 'mt6', name: 'Emu Filet Mignon', name_zh: '野生鸸鹋菲力', price: 45.00, image: 'https://images.unsplash.com/photo-1615937657715-bc7b4b7962c1?auto=format&fit=crop&q=80&w=800', description: 'A delicate, beef-like red meat that is remarkably low in cholesterol.', description_zh: '一种极其柔嫩、口感极似高级牛肉但几乎不含胆固醇的新晋红肉翘楚。', category: 'meat', category_zh: '优质肉类' },
+            
+            // oil
+            { id: 'o1', name: 'Cold Pressed Macadamia Oil', name_zh: '冷榨优质夏威夷果油', price: 18.50, image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=800', description: 'A buttery oil ideal for high heat cooking or exotic salad dressings.', description_zh: '带有淡淡奶油坚果香的健康食用油，无论是高温煎烤还是冷拌沙拉都是绝佳选择。', category: 'oil', category_zh: '天然油脂' },
+            { id: 'o2', name: 'Extra Virgin Olive Oil (Estate Reserve)', name_zh: '特级初榨橄榄油 (庄园珍藏版)', price: 32.00, image: 'https://images.unsplash.com/photo-1620619946221-dbb2def55fa9?auto=format&fit=crop&q=80&w=800', description: 'Award-winning robust EVOO with peppery undertones.', description_zh: '屡获殊荣的极品初榨橄榄油，微微带着具有高级感的辛波辣余味。', category: 'oil', category_zh: '天然油脂' },
+            { id: 'o3', name: 'Pure Emu Oil', name_zh: '提纯鸸鹋油', price: 40.00, image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&q=80&w=800', description: 'Traditional Aboriginal remedy, highly moisturizing and anti-inflammatory.', description_zh: '原住民传统的护肤圣品，具备极强的深度滋润和抗炎功效，天然提取不添加。', category: 'oil', category_zh: '天然油脂' },
+            { id: 'o4', name: 'Avocado Cold Pressed Oil', name_zh: '原汁冷榨牛油果油', price: 21.00, image: 'https://images.unsplash.com/photo-1599304918731-90a4df7ab425?auto=format&fit=crop&q=80&w=800', description: 'Bright emerald green oil packed with natural vitamins.', description_zh: '呈现宛若祖母绿般璀璨颜色的油体，将整颗完整牛油果的全部精华压榨保留。', category: 'oil', category_zh: '天然油脂' },
+            { id: 'o5', name: 'Organic Coconut Oil', name_zh: '生榨有机椰子油', price: 16.50, image: 'https://images.unsplash.com/photo-1622396347101-9257d0794b15?auto=format&fit=crop&q=80&w=800', description: 'Unrefined coconut oil perfect for baking, cooking, or skin care.', description_zh: '未经任何化学精炼处理的纯椰子油，保留了原切椰蓉般的浓郁香气。', category: 'oil', category_zh: '天然油脂' },
+            { id: 'o6', name: 'Truffle Infused Olive Oil', name_zh: '黑松露浸泡橄榄油', price: 45.00, image: 'https://images.unsplash.com/photo-1647898516599-281bba290230?auto=format&fit=crop&q=80&w=800', description: 'Premium olive oil deeply infused with the aroma of Black Truffles.', description_zh: '长时间泡制顶级黑松露碎屑，只需几滴就能唤醒一整盘意面或烩饭的奢华感。', category: 'oil', category_zh: '天然油脂' }
           ];
           products.forEach(p => stmt.run(p.id, p.name, p.name_zh, p.price, p.image, p.description, p.description_zh, p.category, p.category_zh));
           stmt.finalize();
@@ -95,6 +131,30 @@ app.post('/api/orders', (req, res) => {
       res.status(201).json({ message: 'Order created successfully', orderId: this.lastID });
     }
   );
+});
+
+// 3. Get all orders
+app.get('/api/orders', (req, res) => {
+  const email = req.query.email;
+  let query = "SELECT * FROM orders ORDER BY created_at DESC";
+  let params = [];
+  
+  if (email) {
+    query = "SELECT * FROM orders WHERE customer_email = ? ORDER BY created_at DESC";
+    params = [email];
+  }
+
+  db.all(query, params, (err, rows) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    const parsedRows = rows.map(r => ({
+      ...r,
+      items: r.items ? JSON.parse(r.items) : []
+    }));
+    res.json(parsedRows);
+  });
 });
 
 // Start the server

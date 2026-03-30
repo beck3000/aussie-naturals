@@ -1,5 +1,9 @@
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let globalProducts = [];
+let currentCategory = 'all';
+
+let currentModalProductId = null;
+let currentModalQty = 1;
 
 function updateCartBadge() {
   const cartCounts = document.querySelectorAll('.cart-count');
@@ -14,18 +18,53 @@ function saveCart() {
   updateCartBadge();
 }
 
-function addToCart(productId) {
-  const currentItem = cart.find(item => item.id === productId);
-  if (currentItem) {
-    currentItem.quantity += 1;
-  } else {
-    const product = globalProducts.find(p => p.id === productId);
-    if(product) {
-       cart.push({ ...product, quantity: 1 });
-    }
-  }
-  saveCart();
-  alert(currentLang === 'zh' ? '已加入购物车！' : 'Item added to cart!');
+// ---- Modal Logic ----
+function showAddModal(productId) {
+  const product = globalProducts.find(p => p.id === productId);
+  if (!product) return;
+  currentModalProductId = productId;
+  currentModalQty = 1;
+  document.getElementById('modalImg').src = product.image;
+  document.getElementById('modalTitle').textContent = currentLang === 'zh' && product.name_zh ? product.name_zh : product.name;
+  document.getElementById('modalPrice').textContent = '$' + product.price.toFixed(2);
+  document.getElementById('modalQtyDisplay').textContent = 1;
+  document.getElementById('addCartModal').style.display = 'flex';
+}
+
+function closeAddModal() {
+  document.getElementById('addCartModal').style.display = 'none';
+}
+
+function setupModalEvents() {
+  const modal = document.getElementById('addCartModal');
+  if(!modal) return;
+  document.getElementById('closeModalBtn').addEventListener('click', closeAddModal);
+  document.getElementById('modalCancelBtn').addEventListener('click', closeAddModal);
+  
+  document.getElementById('modalReduceBtn').addEventListener('click', () => {
+     if(currentModalQty > 1) {
+       currentModalQty--;
+       document.getElementById('modalQtyDisplay').textContent = currentModalQty;
+     }
+  });
+  document.getElementById('modalAddBtn').addEventListener('click', () => {
+     currentModalQty++;
+     document.getElementById('modalQtyDisplay').textContent = currentModalQty;
+  });
+  
+  document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+      const product = globalProducts.find(p => p.id === currentModalProductId);
+      if(product) {
+         const currentItem = cart.find(item => item.id === currentModalProductId);
+         if (currentItem) {
+            currentItem.quantity += currentModalQty;
+         } else {
+            cart.push({ ...product, quantity: currentModalQty });
+         }
+         saveCart();
+      }
+      closeAddModal();
+  });
 }
 
 function updateQuantity(productId, newQty) {
@@ -44,19 +83,38 @@ function removeFromCart(productId) {
   if (typeof renderCart === 'function') renderCart();
 }
 
+// ---- Tabs & Product Grid ----
+function setupTabsEvents() {
+  const tabs = document.querySelectorAll('.tab-btn');
+  if(!tabs.length) return;
+  tabs.forEach(tab => {
+     tab.addEventListener('click', (e) => {
+        tabs.forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        currentCategory = e.target.getAttribute('data-filter');
+        renderProductsGrid();
+     });
+  });
+}
+
 function renderProductsGrid() {
   const productsGrid = document.querySelector('.products-grid');
   if (productsGrid && globalProducts.length > 0) {
-    productsGrid.innerHTML = globalProducts.map(product => `
+    let filtered = globalProducts;
+    if (currentCategory !== 'all') {
+      filtered = globalProducts.filter(p => p.category === currentCategory);
+    }
+    
+    productsGrid.innerHTML = filtered.map(product => `
       <div class="product-card">
         <div class="img-wrapper">
-          <img src="${product.image}" alt="${product.name}" class="product-image">
+          <img src="${product.image}" loading="lazy" alt="${product.name}" class="product-image">
         </div>
         <div class="product-info">
           <div class="product-category">${currentLang === 'zh' && product.category_zh ? product.category_zh : product.category}</div>
           <h3 class="product-title">${currentLang === 'zh' && product.name_zh ? product.name_zh : product.name}</h3>
           <p class="product-price">$${product.price.toFixed(2)}</p>
-          <button class="btn" style="width:100%" onclick="addToCart('${product.id}')" data-i18n="btn_add_to_cart">${translations[currentLang].btn_add_to_cart}</button>
+          <button class="btn" style="width:100%" onclick="showAddModal('${product.id}')" data-i18n="btn_add_to_cart">${translations[currentLang].btn_add_to_cart}</button>
         </div>
       </div>
     `).join('');
@@ -66,6 +124,8 @@ function renderProductsGrid() {
 // Global initialization
 document.addEventListener('DOMContentLoaded', async () => {
   updateCartBadge();
+  setupModalEvents();
+  setupTabsEvents();
   
   // If we're on the homepage, render products by fetching from Backend
   const productsGrid = document.querySelector('.products-grid');
