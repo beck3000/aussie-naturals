@@ -49,7 +49,8 @@ const translations = {
     orders_empty: '这里没有任何订单记录。赶紧去选购商品吧！',
     order_id_prefix: '订单编号 #',
     order_date_prefix: '下单时间:',
-    order_total: '结账总计:'
+    order_total: '结账总计:',
+    btn_shop_now: '去挑点好吃的！'
   },
   en: {
     nav_shop: 'Shop',
@@ -101,7 +102,8 @@ const translations = {
     orders_empty: 'No order records found. Start shopping now!',
     order_id_prefix: 'Order ID #',
     order_date_prefix: 'Placed on:',
-    order_total: 'Order Total:'
+    order_total: 'Order Total:',
+    btn_shop_now: 'Shop Natural Foods'
   }
 };
 
