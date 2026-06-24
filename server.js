@@ -2,12 +2,104 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
 
 app.use(cors());
 app.use(express.json());
+
+// Intercept / and /index.html to inject dynamic Open Graph tags for shop WeChat share card support
+const handleIndexShare = (req, res) => {
+  const filePath = path.join(__dirname, 'index.html');
+  fs.readFile(filePath, 'utf8', (err, htmlContent) => {
+    if (err) {
+      console.error('Error reading index.html', err);
+      return res.status(500).send('Error loading page');
+    }
+
+    const protocol = req.headers['x-forwarded-proto'] || 'http';
+    const host = req.headers.host;
+    const absoluteImage = `${protocol}://${host}/images/ai/hero_banner_1774671789363.png`;
+    const absoluteUrl = `${protocol}://${host}/index.html`;
+
+    // Inject standard Open Graph tags (Optimized for WeChat Share Card representation of the shop)
+    const ogMetaTags = `
+  <!-- WeChat Share Card metadata for shop -->
+  <meta property="og:title" content="🌿 Aussie Naturals | 澳洲大自然纯净食品商城" />
+  <meta property="og:description" content="🍀 100% 澳洲直采天然有机食材，生态友好采收！全场满 $49 包邮，进入选购！" />
+  <meta property="og:image" content="${absoluteImage}" />
+  <meta property="og:url" content="${absoluteUrl}" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+    `;
+
+    let modifiedHtml = htmlContent;
+    modifiedHtml = modifiedHtml.replace('</head>', `${ogMetaTags}\n</head>`);
+    res.send(modifiedHtml);
+  });
+};
+
+app.get('/', handleIndexShare);
+app.get('/index.html', handleIndexShare);
+
+// Intercept product.html to inject dynamic Open Graph tags for WeChat share card support
+app.get('/product.html', (req, res) => {
+  const productId = req.query.id;
+  const filePath = path.join(__dirname, 'product.html');
+
+  fs.readFile(filePath, 'utf8', (err, htmlContent) => {
+    if (err) {
+      console.error('Error reading product.html', err);
+      return res.status(500).send('Error loading page');
+    }
+
+    if (!productId) {
+      return res.send(htmlContent);
+    }
+
+    db.get("SELECT * FROM products WHERE id = ?", [productId], (dbErr, product) => {
+      if (dbErr || !product) {
+        return res.send(htmlContent);
+      }
+
+      const name = product.name_zh || product.name;
+      const category = product.category_zh || product.category;
+      const priceFormatted = product.price.toFixed(2);
+      const desc = product.description_zh || product.description;
+      const imageRelative = product.image;
+      
+      const protocol = req.headers['x-forwarded-proto'] || 'http';
+      const host = req.headers.host;
+      const absoluteImage = `${protocol}://${host}${imageRelative}`;
+      const absoluteUrl = `${protocol}://${host}/product.html?id=${productId}`;
+
+      let modifiedHtml = htmlContent;
+
+      // Replace title dynamically
+      modifiedHtml = modifiedHtml.replace(
+        /<title[^>]*>([\s\S]*?)<\/title>/i,
+        `<title>${name} | Aussie Naturals</title>`
+      );
+
+      // Inject standard Open Graph tags (Optimized for WeChat Share Card representation)
+      const ogMetaTags = `
+  <!-- WeChat Share Card metadata -->
+  <meta property="og:title" content="🌿 Aussie Naturals | 【纯净甄选】${name}" />
+  <meta property="og:description" content="💰 仅售 $${priceFormatted} | 🍀 品类: ${category} | ✨ 100% 澳洲直采，纯天然有机无添加，点击查看！" />
+  <meta property="og:image" content="${absoluteImage}" />
+  <meta property="og:url" content="${absoluteUrl}" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+      `;
+
+      modifiedHtml = modifiedHtml.replace('</head>', `${ogMetaTags}\n</head>`);
+      res.send(modifiedHtml);
+    });
+  });
+});
+
 app.use(express.static(path.join(__dirname)));
 
 // Dynamic local fallback URL mixed with spoonacular CDN to completely bypass network blocking walls
@@ -107,6 +199,20 @@ app.get('/api/products', (req, res) => {
       return;
     }
     res.json(rows);
+  });
+});
+
+app.get('/api/products/:id', (req, res) => {
+  db.get("SELECT * FROM products WHERE id = ?", [req.params.id], (err, row) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    if (!row) {
+      res.status(404).json({ error: 'Product not found' });
+      return;
+    }
+    res.json(row);
   });
 });
 

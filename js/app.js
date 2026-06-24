@@ -107,12 +107,16 @@ function renderProductsGrid() {
     
     productsGrid.innerHTML = filtered.map(product => `
       <div class="product-card">
-        <div class="img-wrapper">
-          <img src="${product.image}" loading="lazy" alt="${product.name}" class="product-image">
-        </div>
+        <a href="product.html?id=${product.id}" style="text-decoration:none;color:inherit;">
+          <div class="img-wrapper">
+            <img src="${product.image}" loading="lazy" alt="${product.name}" class="product-image">
+          </div>
+        </a>
         <div class="product-info">
           <div class="product-category">${currentLang === 'zh' && product.category_zh ? product.category_zh : product.category}</div>
-          <h3 class="product-title">${currentLang === 'zh' && product.name_zh ? product.name_zh : product.name}</h3>
+          <a href="product.html?id=${product.id}" style="text-decoration:none;color:inherit;">
+            <h3 class="product-title">${currentLang === 'zh' && product.name_zh ? product.name_zh : product.name}</h3>
+          </a>
           <p class="product-price">$${product.price.toFixed(2)}</p>
           <button class="btn" style="width:100%" onclick="showAddModal('${product.id}')" data-i18n="btn_add_to_cart">${translations[currentLang].btn_add_to_cart}</button>
         </div>
@@ -126,6 +130,42 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateCartBadge();
   setupModalEvents();
   setupTabsEvents();
+
+  // Dynamically inject mobile navigation toggle & overlay
+  const header = document.querySelector('header');
+  if (header) {
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'menu-toggle';
+    toggleBtn.id = 'menuToggle';
+    toggleBtn.setAttribute('aria-label', 'Toggle Navigation');
+    toggleBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12" class="line-1"></line>
+        <line x1="3" y1="6" x2="21" y2="6" class="line-2"></line>
+        <line x1="3" y1="18" x2="21" y2="18" class="line-3"></line>
+      </svg>
+    `;
+    header.appendChild(toggleBtn);
+
+    const overlay = document.createElement('div');
+    overlay.className = 'nav-overlay';
+    overlay.id = 'navOverlay';
+    document.body.appendChild(overlay);
+
+    const navLinks = header.querySelector('.nav-links');
+
+    toggleBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      overlay.classList.toggle('active');
+      toggleBtn.classList.toggle('open');
+    });
+
+    overlay.addEventListener('click', () => {
+      navLinks.classList.remove('active');
+      overlay.classList.remove('active');
+      toggleBtn.classList.remove('open');
+    });
+  }
   
   // If we're on the homepage, render products by fetching from Backend
   const productsGrid = document.querySelector('.products-grid');
@@ -139,5 +179,40 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.error(err);
       productsGrid.innerHTML = '<p style="color:var(--text-light);text-align:center;grid-column:1/-1;" data-i18n="error_loading">Error loading products.</p>';
     }
+  }
+
+  // Setup Shop Share Poster Modal Actions
+  const shareShopBtn = document.getElementById('shareShopBtn');
+  const closeShopShareBtn = document.getElementById('closeShopShareModalBtn');
+  const shareShopModal = document.getElementById('shareShopModal');
+  const shareShopQr = document.getElementById('share-shop-qr');
+
+  if (shareShopBtn && shareShopModal) {
+    shareShopBtn.addEventListener('click', () => {
+      if (shareShopQr) {
+        shareShopQr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=2e5c50&data=${encodeURIComponent(window.location.href)}`;
+      }
+      shareShopModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    });
+  }
+
+  const closeShopShareAction = () => {
+    if (shareShopModal) {
+      shareShopModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  };
+
+  if (closeShopShareBtn) {
+    closeShopShareBtn.addEventListener('click', closeShopShareAction);
+  }
+
+  if (shareShopModal) {
+    shareShopModal.addEventListener('click', (e) => {
+      if (e.target === shareShopModal) {
+        closeShopShareAction();
+      }
+    });
   }
 });

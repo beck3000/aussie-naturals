@@ -1,0 +1,177 @@
+let currentProduct = null;
+let detailQty = 1;
+
+function updateDetailQtyDisplay() {
+  const qtyDisplay = document.getElementById('detailQtyDisplay');
+  if (qtyDisplay) {
+    qtyDisplay.textContent = detailQty;
+  }
+}
+
+function renderDetailData() {
+  if (!currentProduct) return;
+
+  const productImg = document.getElementById('product-img');
+  const productCat = document.getElementById('product-cat');
+  const productTitle = document.getElementById('product-title');
+  const productPrice = document.getElementById('product-price');
+  const productDesc = document.getElementById('product-desc');
+
+  if (productImg) {
+    productImg.src = currentProduct.image;
+    productImg.alt = currentProduct.name;
+  }
+
+  if (productCat) {
+    productCat.textContent = (currentLang === 'zh' && currentProduct.category_zh) ? currentProduct.category_zh : currentProduct.category;
+  }
+  if (productTitle) {
+    productTitle.textContent = (currentLang === 'zh' && currentProduct.name_zh) ? currentProduct.name_zh : currentProduct.name;
+  }
+  if (productPrice) {
+    productPrice.textContent = '$' + currentProduct.price.toFixed(2);
+  }
+  if (productDesc) {
+    productDesc.textContent = (currentLang === 'zh' && currentProduct.description_zh) ? currentProduct.description_zh : currentProduct.description;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get('id');
+
+  const errorContainer = document.getElementById('error-container');
+  const detailLayout = document.getElementById('product-detail-layout');
+
+  if (!productId) {
+    if (errorContainer) errorContainer.style.display = 'block';
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/products/${productId}`);
+    if (!response.ok) throw new Error('Product not found');
+    currentProduct = await response.json();
+
+    if (detailLayout) {
+      detailLayout.style.display = 'grid';
+    }
+    renderDetailData();
+
+    // Setup quantity selector actions
+    const reduceBtn = document.getElementById('detailReduceBtn');
+    const addBtn = document.getElementById('detailAddBtn');
+    const addToCartBtn = document.getElementById('detailAddToCartBtn');
+
+    if (reduceBtn) {
+      reduceBtn.addEventListener('click', () => {
+        if (detailQty > 1) {
+          detailQty--;
+          updateDetailQtyDisplay();
+        }
+      });
+    }
+
+    if (addBtn) {
+      addBtn.addEventListener('click', () => {
+        detailQty++;
+        updateDetailQtyDisplay();
+      });
+    }
+
+    if (addToCartBtn) {
+      addToCartBtn.addEventListener('click', () => {
+        if (!currentProduct) return;
+        
+        // Find if item already in cart
+        const currentItem = cart.find(item => item.id === currentProduct.id);
+        if (currentItem) {
+          currentItem.quantity += detailQty;
+        } else {
+          cart.push({ ...currentProduct, quantity: detailQty });
+        }
+        
+        // Save using globally available saveCart from app.js
+        saveCart();
+
+        // Simple button feedback animation
+        const btnText = addToCartBtn.querySelector('span');
+        if (btnText) {
+          btnText.removeAttribute('data-i18n'); // Remove i18n label temporarily to show success feedback
+          btnText.textContent = currentLang === 'zh' ? '已成功加入！' : 'Added Successfully!';
+          addToCartBtn.style.backgroundColor = '#1a3b33'; // darker primary-hover color
+          
+          setTimeout(() => {
+            btnText.setAttribute('data-i18n', 'btn_add_to_cart_long');
+            btnText.textContent = translations[currentLang].btn_add_to_cart_long;
+            addToCartBtn.style.backgroundColor = '';
+          }, 1500);
+        }
+      });
+    }
+
+    // Set up language switcher listener to re-render dynamic name/desc on switch
+    const switcher = document.getElementById('langSwitcher');
+    if (switcher) {
+      switcher.addEventListener('change', () => {
+        setTimeout(renderDetailData, 50); // allow i18n.js translations to process first
+      });
+    }
+
+    // Set up Sharing Poster actions
+    const shareBtn = document.getElementById('shareProductBtn');
+    const closeShareBtn = document.getElementById('closeShareModalBtn');
+    const shareModal = document.getElementById('sharePosterModal');
+
+    if (shareBtn && shareModal) {
+      shareBtn.addEventListener('click', () => {
+        if (!currentProduct) return;
+
+        // Fill data into Share Card
+        const shareImg = document.getElementById('share-card-img');
+        const shareCat = document.getElementById('share-card-cat');
+        const shareTitle = document.getElementById('share-card-title');
+        const sharePrice = document.getElementById('share-card-price');
+        const shareQr = document.getElementById('share-card-qr');
+
+        if (shareImg) shareImg.src = currentProduct.image;
+        if (shareCat) shareCat.textContent = (currentLang === 'zh' && currentProduct.category_zh) ? currentProduct.category_zh : currentProduct.category;
+        if (shareTitle) shareTitle.textContent = (currentLang === 'zh' && currentProduct.name_zh) ? currentProduct.name_zh : currentProduct.name;
+        if (sharePrice) sharePrice.textContent = '$' + currentProduct.price.toFixed(2);
+        
+        // Generate QR code for the current product page dynamically
+        if (shareQr) {
+          shareQr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=2e5c50&data=${encodeURIComponent(window.location.href)}`;
+        }
+
+        // Show Modal
+        shareModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // prevent background scroll
+      });
+    }
+
+    const closeShareAction = () => {
+      if (shareModal) {
+        shareModal.style.display = 'none';
+        document.body.style.overflow = ''; // restore scroll
+      }
+    };
+
+    if (closeShareBtn) {
+      closeShareBtn.addEventListener('click', closeShareAction);
+    }
+
+    if (shareModal) {
+      shareModal.addEventListener('click', (e) => {
+        if (e.target === shareModal) {
+          closeShareAction();
+        }
+      });
+    }
+
+  } catch (err) {
+    console.error(err);
+    if (detailLayout) detailLayout.style.display = 'none';
+    if (errorContainer) errorContainer.style.display = 'block';
+  }
+});
