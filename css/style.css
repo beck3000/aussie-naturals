@@ -170,6 +170,21 @@ header {
   background-color: #c4915b;
 }
 
+.btn-hero-outline {
+  background-color: transparent;
+  color: var(--white);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: none;
+}
+
+.btn-hero-outline:hover {
+  background-color: var(--white);
+  color: var(--primary-color);
+  border-color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+
 /* Products Grid */
 .products-section {
   padding: 5rem 5%;
