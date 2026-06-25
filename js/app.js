@@ -187,6 +187,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   const shareShopModal = document.getElementById('shareShopModal');
   const shareShopQrContainer = document.querySelector('#shareShopModal .share-qr-wrap');
 
+  // Native Share Check for Shop
+  const nativeShareShopWrap = document.getElementById('nativeShareShopWrap');
+  const nativeShareShopBtn = document.getElementById('nativeShareShopBtn');
+  if (navigator.share && nativeShareShopWrap && nativeShareShopBtn) {
+    nativeShareShopWrap.style.display = 'block';
+    nativeShareShopBtn.addEventListener('click', async () => {
+      try {
+        await navigator.share({
+          title: document.title,
+          text: '🌿 Aussie Naturals | 澳洲大自然纯净食品商城。全场满 $49 包邮！',
+          url: window.location.href
+        });
+      } catch (err) {
+        console.log('Native share canceled or failed', err);
+      }
+    });
+  }
+
   if (shareShopBtn && shareShopModal) {
     shareShopBtn.addEventListener('click', () => {
       if (shareShopQrContainer) {

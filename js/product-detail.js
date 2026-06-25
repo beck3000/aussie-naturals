@@ -124,6 +124,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const shareModal = document.getElementById('sharePosterModal');
 
     if (shareBtn && shareModal) {
+      // Native Share Check for Product
+      const nativeShareProductWrap = document.getElementById('nativeShareProductWrap');
+      const nativeShareProductBtn = document.getElementById('nativeShareProductBtn');
+      if (navigator.share && nativeShareProductWrap && nativeShareProductBtn) {
+        nativeShareProductWrap.style.display = 'block';
+        nativeShareProductBtn.addEventListener('click', async () => {
+          if (!currentProduct) return;
+          try {
+            const pName = (currentLang === 'zh' && currentProduct.name_zh) ? currentProduct.name_zh : currentProduct.name;
+            await navigator.share({
+              title: `🌿 Aussie Naturals | ${pName}`,
+              text: `🍀 100% 澳洲直采天然有机食材！仅售 $${currentProduct.price.toFixed(2)}。`,
+              url: window.location.href
+            });
+          } catch (err) {
+            console.log('Native share canceled or failed', err);
+          }
+        });
+      }
+
       shareBtn.addEventListener('click', () => {
         if (!currentProduct) return;
 
