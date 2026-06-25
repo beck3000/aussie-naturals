@@ -134,9 +134,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           try {
             const pName = (currentLang === 'zh' && currentProduct.name_zh) ? currentProduct.name_zh : currentProduct.name;
             if (navigator.share) {
+              // 移除 text 属性，防止微信 Share Extension 解析多重参数崩溃
               await navigator.share({
                 title: `🌿 Aussie Naturals | ${pName}`,
-                text: `🍀 100% 澳洲直采天然有机食材！仅售 $${currentProduct.price.toFixed(2)}。`,
                 url: window.location.href
               });
             } else {

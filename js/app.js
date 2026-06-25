@@ -195,9 +195,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     nativeShareShopBtn.addEventListener('click', async () => {
       try {
         if (navigator.share) {
+          // 移除 text 属性，避免微信 Share Extension 解析多重参数时发生中断/崩溃
           await navigator.share({
-            title: document.title,
-            text: '🌿 Aussie Naturals | 澳洲大自然纯净食品商城。全场满 $49 包邮！',
+            title: '🌿 Aussie Naturals',
             url: window.location.href
           });
         } else {
