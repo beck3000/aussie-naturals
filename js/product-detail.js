@@ -132,16 +132,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         const shareCat = document.getElementById('share-card-cat');
         const shareTitle = document.getElementById('share-card-title');
         const sharePrice = document.getElementById('share-card-price');
-        const shareQr = document.getElementById('share-card-qr');
-
+        const shareQrContainer = document.querySelector('#shareCardBody .share-qr-wrap');
+        
         if (shareImg) shareImg.src = currentProduct.image;
         if (shareCat) shareCat.textContent = (currentLang === 'zh' && currentProduct.category_zh) ? currentProduct.category_zh : currentProduct.category;
         if (shareTitle) shareTitle.textContent = (currentLang === 'zh' && currentProduct.name_zh) ? currentProduct.name_zh : currentProduct.name;
         if (sharePrice) sharePrice.textContent = '$' + currentProduct.price.toFixed(2);
         
         // Generate QR code for the current product page dynamically
-        if (shareQr) {
-          shareQr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=2e5c50&data=${encodeURIComponent(window.location.href)}`;
+        if (shareQrContainer) {
+          shareQrContainer.innerHTML = '';
+          new QRCode(shareQrContainer, {
+            text: window.location.href,
+            width: 150,
+            height: 150
+          });
         }
 
         // Show Modal

@@ -185,12 +185,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const shareShopBtn = document.getElementById('shareShopBtn');
   const closeShopShareBtn = document.getElementById('closeShopShareModalBtn');
   const shareShopModal = document.getElementById('shareShopModal');
-  const shareShopQr = document.getElementById('share-shop-qr');
+  const shareShopQrContainer = document.querySelector('#shareShopModal .share-qr-wrap');
 
   if (shareShopBtn && shareShopModal) {
     shareShopBtn.addEventListener('click', () => {
-      if (shareShopQr) {
-        shareShopQr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=2e5c50&data=${encodeURIComponent(window.location.href)}`;
+      if (shareShopQrContainer) {
+        shareShopQrContainer.innerHTML = '';
+        new QRCode(shareShopQrContainer, {
+          text: window.location.href,
+          width: 150,
+          height: 150
+        });
       }
       shareShopModal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
