@@ -201,16 +201,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             url: window.location.href
           });
         } else {
-          // PC 端降级方案：一键复制链接
-          await navigator.clipboard.writeText(window.location.href);
-          const originalHTML = nativeShareShopBtn.innerHTML;
-          nativeShareShopBtn.innerHTML = '<span>✅ 链接已复制，快去粘贴发送吧！</span>';
-          setTimeout(() => {
-            nativeShareShopBtn.innerHTML = originalHTML;
-          }, 2500);
+          // PC 端 / HTTP 环境 / 微信内置浏览器 降级方案
+          throw new Error('Web Share API not supported in this context.');
         }
       } catch (err) {
-        console.log('Share canceled or failed', err);
+        // Fallback multi-layer copy mechanism
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(window.location.href);
+          } else {
+            // Legacy classic execCommand fallback for HTTP environments
+            const input = document.createElement('input');
+            input.value = window.location.href;
+            document.body.appendChild(input);
+            input.select();
+            input.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            document.body.removeChild(input);
+          }
+          const originalHTML = nativeShareShopBtn.innerHTML;
+          nativeShareShopBtn.innerHTML = '<span>✅ 链接已复制，快去发送吧！</span>';
+          setTimeout(() => { nativeShareShopBtn.innerHTML = originalHTML; }, 2500);
+        } catch(fallbackErr) {
+          alert('当前浏览器环境受限，请点击右上角 [...] 进行分享');
+        }
       }
     });
   }
