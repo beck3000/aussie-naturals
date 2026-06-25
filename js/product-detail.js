@@ -127,19 +127,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Native Share Check for Product
       const nativeShareProductWrap = document.getElementById('nativeShareProductWrap');
       const nativeShareProductBtn = document.getElementById('nativeShareProductBtn');
-      if (navigator.share && nativeShareProductWrap && nativeShareProductBtn) {
-        nativeShareProductWrap.style.display = 'block';
+      if (nativeShareProductWrap && nativeShareProductBtn) {
+        nativeShareProductWrap.style.display = 'block'; // 永远可见
         nativeShareProductBtn.addEventListener('click', async () => {
           if (!currentProduct) return;
           try {
             const pName = (currentLang === 'zh' && currentProduct.name_zh) ? currentProduct.name_zh : currentProduct.name;
-            await navigator.share({
-              title: `🌿 Aussie Naturals | ${pName}`,
-              text: `🍀 100% 澳洲直采天然有机食材！仅售 $${currentProduct.price.toFixed(2)}。`,
-              url: window.location.href
-            });
+            if (navigator.share) {
+              await navigator.share({
+                title: `🌿 Aussie Naturals | ${pName}`,
+                text: `🍀 100% 澳洲直采天然有机食材！仅售 $${currentProduct.price.toFixed(2)}。`,
+                url: window.location.href
+              });
+            } else {
+              // PC 端降级方案：一键复制链接
+              await navigator.clipboard.writeText(window.location.href);
+              const originalHTML = nativeShareProductBtn.innerHTML;
+              nativeShareProductBtn.innerHTML = '<span>✅ 链接已复制，快去粘贴发送吧！</span>';
+              setTimeout(() => {
+                nativeShareProductBtn.innerHTML = originalHTML;
+              }, 2500);
+            }
           } catch (err) {
-            console.log('Native share canceled or failed', err);
+            console.log('Share canceled or failed', err);
           }
         });
       }

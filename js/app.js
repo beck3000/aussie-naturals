@@ -190,17 +190,27 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Native Share Check for Shop
   const nativeShareShopWrap = document.getElementById('nativeShareShopWrap');
   const nativeShareShopBtn = document.getElementById('nativeShareShopBtn');
-  if (navigator.share && nativeShareShopWrap && nativeShareShopBtn) {
-    nativeShareShopWrap.style.display = 'block';
+  if (nativeShareShopWrap && nativeShareShopBtn) {
+    nativeShareShopWrap.style.display = 'block'; // 永远可见
     nativeShareShopBtn.addEventListener('click', async () => {
       try {
-        await navigator.share({
-          title: document.title,
-          text: '🌿 Aussie Naturals | 澳洲大自然纯净食品商城。全场满 $49 包邮！',
-          url: window.location.href
-        });
+        if (navigator.share) {
+          await navigator.share({
+            title: document.title,
+            text: '🌿 Aussie Naturals | 澳洲大自然纯净食品商城。全场满 $49 包邮！',
+            url: window.location.href
+          });
+        } else {
+          // PC 端降级方案：一键复制链接
+          await navigator.clipboard.writeText(window.location.href);
+          const originalHTML = nativeShareShopBtn.innerHTML;
+          nativeShareShopBtn.innerHTML = '<span>✅ 链接已复制，快去粘贴发送吧！</span>';
+          setTimeout(() => {
+            nativeShareShopBtn.innerHTML = originalHTML;
+          }, 2500);
+        }
       } catch (err) {
-        console.log('Native share canceled or failed', err);
+        console.log('Share canceled or failed', err);
       }
     });
   }
