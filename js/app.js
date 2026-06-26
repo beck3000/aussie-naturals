@@ -193,19 +193,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (nativeShareShopWrap && nativeShareShopBtn) {
     nativeShareShopWrap.style.display = 'block'; // 永远可见
     nativeShareShopBtn.addEventListener('click', async () => {
-      try {
-        if (navigator.share) {
+      if (navigator.share) {
+        try {
           // 移除 text 属性，避免微信 Share Extension 解析多重参数时发生中断/崩溃
           await navigator.share({
             title: '🌿 Aussie Naturals',
             url: window.location.href
           });
-        } else {
-          // PC 端 / HTTP 环境 / 微信内置浏览器 降级方案
-          throw new Error('Web Share API not supported in this context.');
+        } catch (err) {
+          // 彻底静默忽略：用户取消分享或接口风控熔断，绝不去触发剪贴板复制，防止失去 User Gesture 上下文导致二次崩溃弹窗
+          console.log('Share aborted or failed', err);
         }
-      } catch (err) {
-        // Fallback multi-layer copy mechanism
+      } else {
+        // PC 端 / HTTP 环境 / 微信内置浏览器 降级方案
         try {
           if (navigator.clipboard && navigator.clipboard.writeText) {
             await navigator.clipboard.writeText(window.location.href);
